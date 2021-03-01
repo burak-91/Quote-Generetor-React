@@ -1,24 +1,56 @@
-import logo from './logo.svg';
-import './App.css';
+import Ui from "./Ui";
+import React, { useState,useEffect, Fragment } from 'react';
+import Loading from "./Loading";
+
 
 function App() {
+  const [quotes, setquotes] = useState([]);
+  const [author,setAuthor] = useState("");
+  const [text, setText] = useState("");
+  const [loading,changeLoading]= useState(false)
+  const url ="https://type.fit/api/quotes";
+  
+
+  useEffect(() => {
+    
+    fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      let genereteNumber = Math.floor(Math.random()*1643)+1
+      setquotes(data)
+      setAuthor(data[genereteNumber].author)
+      setText(data[genereteNumber].text)
+    })
+    
+  },[]);
+
+  const getNewQuotes=()=>{
+    changeLoading(true)
+    setTimeout(() => {
+      changeLoading(false)
+    },750);
+      let randomNumber =Math.floor(Math.random()*1643)+1
+      setAuthor(quotes[randomNumber].author)
+      setText(quotes[randomNumber].text)
+      
+     
+  }
+  const goToTweeter=()=>{
+    const twitterUrl=`https://twitter.com/intent/tweet?text=${text}-${author}`
+    window.open(twitterUrl,"_blank")
+  }
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Fragment>
+     <div>
+       {loading?(<Loading/>):(<Ui goToTweeter={goToTweeter} author={author} text={text} getNewQuotes={getNewQuotes}/>)}
+       
+     </div>
+     
+     </Fragment>
+     
+ 
   );
 }
 
